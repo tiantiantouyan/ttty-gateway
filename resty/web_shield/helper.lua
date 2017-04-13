@@ -8,7 +8,7 @@ M.PASS = 2
 M.BREAK = 3
 
 
--- TODO unify time: redis
+-- TODO unify time: redis:time()
 -- ngx.time: fast, os.time: slow
 function M.time()
   if ngx.time then

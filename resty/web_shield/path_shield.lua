@@ -27,18 +27,21 @@ local Logger = require 'resty.web_shield.logger'
 --      limit = 5
 --    }
 --  }
-function M.new(config)
+function M.new(web_shield, config)
   return setmetatable({
+    web_shield = web_shield,
     threshold = config.threshold
   }, M)
 end
 
 function M:filter(ip, uid, method, path)
+  local store = Store.new(self.web_shield.config.redis_host, self.web_shield.config.redis_port)
+
   for index, filter in pairs(self.threshold) do
     local counter_key, counter_str = M.generate_counter_key(filter, ip, uid, method, path)
 
     if M.req_match(filter.matcher, method, path) then
-      total_reqs = Store.new():incr_counter(counter_key, filter.period)
+      total_reqs = store:incr_counter(counter_key, filter.period)
       Logger.debug("Threshold " .. counter_str .. ' => ' .. total_reqs)
       if total_reqs > filter.limit then return Helper.BLOCK end
       if filter.break_shield then return Helper.BREAK end

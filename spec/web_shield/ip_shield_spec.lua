@@ -4,9 +4,10 @@ describe("IPShield", function()
     whitelist = {'127.0.0.1', '192.168.0.1/16', '1.1.1.1'},
     blacklist = {'1.2.3.4', '123.123.1.1/24', '1.1.1.1'}
   }
+  local web_shield = WebShield.new({}, {})
 
   describe("filter", function()
-    local shield = IPShield.new(config)
+    local shield = IPShield.new(web_shield, config)
 
     it("should pass normal ip", function()
       assert.is_equal(shield:filter('129.1.1.1', 'uid', 'GET', '/'), Helper.PASS)

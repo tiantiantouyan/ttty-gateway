@@ -21,6 +21,8 @@ describe("ControlShield", function()
     }
   }
 
+  local web_shield = WebShield.new({}, config)
+
   local function req_info(ip)
     return ip, 'uid', 'GET', '/'
   end
@@ -28,7 +30,7 @@ describe("ControlShield", function()
   describe("filter", function()
     describe("order = 'and'", function()
       config.order = 'and'
-      local shield = ControlShield.new(config)
+      local shield = ControlShield.new(web_shield, config)
 
       it('should pass ip if all shields is pass', function()
         assert.is_equal(shield:filter(req_info('1.2.2.2')), Helper.PASS)
@@ -47,7 +49,7 @@ describe("ControlShield", function()
 
     describe("order = 'or'", function()
       config.order = 'or'
-      local shield = ControlShield.new(config)
+      local shield = ControlShield.new(web_shield, config)
 
       it('should pass ip if any shields is pass', function()
         assert.is_equal(shield:filter(req_info('2.2.2.2')), Helper.PASS)
@@ -76,7 +78,7 @@ describe("ControlShield", function()
           }
         }
       })
-      local shield = ControlShield.new(config)
+      local shield = ControlShield.new(web_shield, config)
 
       it('should pass if all pass', function()
         assert.is_equal(shield:filter(req_info('1.2.2.2')), Helper.PASS)

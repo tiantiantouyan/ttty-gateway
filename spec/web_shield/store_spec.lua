@@ -7,6 +7,13 @@ describe('store', function()
     clear_redis()
   end)
 
+  describe("new", function()
+    it('should use 127.0.0.1:6379 if not args', function()
+      assert.is_equal(store.host, '127.0.0.1')
+      assert.is_equal(store.port, 6379)
+    end)
+  end)
+
   describe("incr_counter", function()
     it('should return current value', function()
       assert.is_equal(store:incr_counter('a', 3), 1)

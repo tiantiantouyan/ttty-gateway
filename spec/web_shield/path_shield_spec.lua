@@ -18,7 +18,8 @@ describe("PathShield", function()
         {matcher = {method = {'PUT', "DELETE"}, path = '/users/*'}, period = 5, limit = 1}
       }
     }
-    local shield = PathShield.new(config)
+    local web_shield = WebShield.new({}, {})
+    local shield = PathShield.new(web_shield, config)
 
     it("should pass if no over limit", function()
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/'), Helper.PASS)

@@ -6,13 +6,13 @@ local Helper = require 'resty.web_shield.helper'
 local Logger = require 'resty.web_shield.logger'
 
 
-function M.new()
-  local redis, err = M.init_redis(
-    ngx.ctx.redis_host or '127.0.0.1', ngx.ctx.redis_port or 6379
-  )
+function M.new(host, port)
+  local host = host or '127.0.0.1'
+  local port = port or 6379
+  local redis, err = M.init_redis(host, port)
   if not redis then return nil, err end
 
-  return setmetatable({redis = redis}, M)
+  return setmetatable({host = host, port = port, redis = redis}, M)
 end
 
 function M:incr_counter(key, period)

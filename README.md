@@ -7,13 +7,16 @@ Base OpenResty
 ## Usage
 
 ```
-require('resty.web_shield').new(config):check(
+require('resty.web_shield').new(
+  {redis_host = '127.0.0.1', redis_port = 6379},
+  shield_config
+):check(
   ip, user_identifier, ngx.var.request_method, ngx.var.uri
 )
 ```
 
 
-### Config
+### Shield Config
 
 ```
 {
@@ -22,7 +25,7 @@ require('resty.web_shield').new(config):check(
     name = 'ip_shield',
     config = {
       whitelist = { '127.0.0.1', '192.168.0.1/16', '172.0.0.1/8' },
-      blacklist = { '123.123.123.123/16', }
+      blacklist = { '123.123.123.123/16' }
     },
     
     name = 'path_shield',
@@ -99,7 +102,7 @@ require('resty.web_shield').new(config):check(
 ## TODO LIST
 
 - [ ] Proxy forwarded whitelist
-- [ ] Redis config
+- [x] Redis config
 - [x] IPShield support mask
 - [ ] dynamic update config
 - [ ] collect log, alert

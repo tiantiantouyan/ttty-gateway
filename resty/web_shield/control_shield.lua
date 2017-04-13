@@ -6,7 +6,6 @@
 
 local M ={}
 M.__index = M
-M._cache_shields = {}
 
 local Helper = require 'resty.web_shield.helper'
 local Logger = require 'resty.web_shield.logger'
@@ -19,7 +18,7 @@ local Logger = require 'resty.web_shield.logger'
 --    {name = '{xx}_shield', config = config_table}
 --  }
 --
-function M.new(config)
+function M.new(web_shield, config)
   if config.order == nil then
     Logger.err('Need config.order')
     return nil
@@ -29,12 +28,14 @@ function M.new(config)
     return nil
   end
 
-  return setmetatable({config = config}, M)
+  return setmetatable({
+    web_shield = web_shield, config = config
+  }, M)
 end
 
 function M:filter(ip, uid, method, path)
   for index, desc in ipairs(self.config.shields) do
-    local shield = M.fetch_shield_cls(desc.name).new(desc.config)
+    local shield = self.web_shield:new_shield(desc.name, desc.config)
     local result = shield:filter(ip, uid, method, path)
 
     if result == Helper.BREAK then return result end
@@ -49,21 +50,6 @@ function M:filter(ip, uid, method, path)
     -- No pass or break
     return Helper.BLOCK
   end
-end
-
-
---
----- Helpers
---
-
-function M.fetch_shield_cls(name)
-  local shield = M._cache_shields[name]
-  if not shield then
-    shield = require('resty.web_shield.' .. name)
-    M._cache_shields[name] = shield
-  end
-
-  return shield
 end
 
 return M
