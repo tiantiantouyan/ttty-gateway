@@ -98,9 +98,9 @@ require('resty.web_shield').new(config):check(
 
 ## TODO LIST
 
-* Proxy forwarded whitelist
-* Redis config
-* IPShield support mask
-* dynamic update config
-* collect log, alert
+- [ ] Proxy forwarded whitelist
+- [ ] Redis config
+- [x] IPShield support mask
+- [ ] dynamic update config
+- [ ] collect log, alert
 
