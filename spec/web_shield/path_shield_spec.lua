@@ -1,11 +1,8 @@
 describe("PathShield", function()
   local PathShield = require 'resty.web_shield.path_shield'
-  local Helper = require 'resty.web_shield.helper'
-  local Store = require 'resty.web_shield.store'
 
   before_each(function()
-    local s = Store.new()
-    s.redis:flushdb()
+    clear_redis()
   end)
 
   describe("filter", function()

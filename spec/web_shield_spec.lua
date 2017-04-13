@@ -1,6 +1,5 @@
 describe("WebShield", function()
   describe(".check", function()
-    -- local WebShield = require 'resty.web_shield'
     local ControlShield = require 'resty.web_shield.control_shield'
     local config = {
       order = "and",

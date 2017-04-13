@@ -1,6 +1,5 @@
 describe("ControlShield", function()
   local ControlShield = require 'resty.web_shield.control_shield'
-  local Helper = require 'resty.web_shield.helper'
 
   local config = {
     order = 'and',

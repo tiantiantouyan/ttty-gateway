@@ -1,6 +1,5 @@
 local M = {}
 
-local MD5 = require 'resty.md5'
 local String = require 'resty.string'
 
 -- Filter constans
@@ -20,9 +19,7 @@ function M.time()
 end
 
 function M.md5(str)
-  local md5 = MD5:new()
-  md5:update(str)
-  return String.to_hex(md5:final())
+  return ngx.md5(str)
 end
 
 return M

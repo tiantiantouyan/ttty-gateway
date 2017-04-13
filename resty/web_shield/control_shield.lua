@@ -21,11 +21,11 @@ local Logger = require 'resty.web_shield.logger'
 --
 function M.new(config)
   if config.order == nil then
-    Logger.err('[WebShield] need config.order')
+    Logger.err('Need config.order')
     return nil
   end
   if config.shields == nil or #config.shields == 0 then
-    Logger.err('[WebShield] need config.shields')
+    Logger.err('Need config.shields')
     return nil
   end
 

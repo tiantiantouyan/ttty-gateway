@@ -9,6 +9,7 @@ M.__index = M
 
 local Helper = require 'resty.web_shield.helper'
 local Logger = require 'resty.web_shield.logger'
+local Bit = require 'bit'
 
 -- config table:
 --  whitelist: {'127.0.0.1', '10.10.1.1/16'},
@@ -23,20 +24,45 @@ end
 
 function M:filter(ip, uid, method, path)
   for index, value in ipairs(self.blacklist) do
-    if value == ip then
+    if M.ip_match(value, ip) then
       Logger.debug('Block blacklist ip ' .. ip)
       return Helper.BLOCK
     end
   end
 
   for index, value in ipairs(self.whitelist) do
-    if value == ip then
+    if M.ip_match(value, ip) then
       Logger.debug('Pass whitelist ip ' .. ip)
       return Helper.BREAK
     end
   end
 
   return Helper.PASS
+end
+
+-- matcher: ip or ip/mask, exampel: '127.0.0.1', '192.168.1.1/16'
+-- ip
+M.ip_masks = {}
+for i = 0, 32 do
+  M.ip_masks[tostring(i)] = Bit.lshift(0xffffffff, 32 - i)
+end
+
+function M.ip_match(matcher, ip)
+  local iter = matcher:gmatch("[^/]+")
+  local m_ip = iter()
+  local m_mask = iter() or '32'
+  local mask = M.ip_masks[m_mask]
+
+  return Bit.band(M.ip2int(m_ip), mask) == Bit.band(M.ip2int(ip), mask)
+end
+
+function M.ip2int(ip)
+  local int = 0
+  for ip in ip:gmatch("%w+") do
+    int = Bit.lshift(int, 8)
+    int = Bit.bor(int, tonumber(ip))
+  end
+  return int
 end
 
 return M

@@ -1,19 +1,45 @@
-local M = {}
+local M = {
+  output_level = 2,
+  log_dev = 'auto', -- auto, stdout, null
+  log_prefix = '[WebShield] '
+}
 
-local log_level = {
+local log_names = {
   debug = 'DEBUG',
   info = 'INFO',
   warn = 'WARN',
   err = 'ERR'
 }
 
-function M.log(level, msg)
-  if ngx and ngx.log then
-    ngx.log(ngx[log_level[level]], msg)
+M.levels = {
+  debug = 1,
+  info = 2,
+  warn = 3,
+  err = 4
+}
+
+M.log_devs = {
+  ngx = function(level, msg)
+    ngx.log(ngx[log_names[level]], M.log_prefix .. msg)
+  end,
+  stdout = function(level, msg)
+    if M.levels[level] < M.output_level then return end
+    print("[" .. log_names[level] .. '] ' .. M.log_prefix .. msg)
+  end,
+  null = function(level, msg) end
+}
+
+
+function M.set_log_dev(dev)
+  M.log_dev = dev or 'auto'
+
+  if M.log_dev == 'auto' and ngx and ngx.log then
+    M.log = M.log_devs.ngx
   else
-    print("[" .. log_level[level] .. '] ' .. msg)
+    M.log = M.log_devs.stdout
   end
 end
+M.set_log_dev('auto')
 
 function M.debug(msg)
   M.log('debug', msg)

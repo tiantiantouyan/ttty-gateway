@@ -6,8 +6,10 @@ local Helper = require 'resty.web_shield.helper'
 local Logger = require 'resty.web_shield.logger'
 
 
-function M.new(host, port)
-  local redis, err = M.init_redis(host or '127.0.0.1', port or 6379)
+function M.new()
+  local redis, err = M.init_redis(
+    ngx.ctx.redis_host or '127.0.0.1', ngx.ctx.redis_port or 6379
+  )
   if not redis then return nil, err end
 
   return setmetatable({redis = redis}, M)
@@ -16,15 +18,17 @@ end
 function M:incr_counter(key, period)
   local redis = self.redis
   local time = Helper.time()
+  local incr_key = key .. '-' .. math.floor(time / period)
 
   redis:multi()
-  redis:incr(key .. '-' .. math.floor(time / period))
-  redis:expire(key, period)
+  redis:incr(incr_key)
+  redis:expire(incr_key, period)
   local result, err = redis:exec()
 
   if result then
     return result[1]
   else
+    Logger.err(err)
     return 0
   end
 end

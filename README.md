@@ -1,6 +1,8 @@
 WebShield
 ===========
 
+Base OpenResty
+
 
 ## Usage
 
@@ -88,7 +90,17 @@ require('resty.web_shield').new(config):check(
   }
 ```
 
+
 ## Limitations
 
 * period use unify time
+
+
+## TODO LIST
+
+* Proxy forwarded whitelist
+* Redis config
+* IPShield support mask
+* dynamic update config
+* collect log, alert
 
