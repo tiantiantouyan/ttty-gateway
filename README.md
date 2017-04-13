@@ -7,11 +7,13 @@ Base OpenResty
 ## Usage
 
 ```
-require('resty.web_shield').new(
+local web_shield = require('resty.web_shield').new(
   {redis_host = '127.0.0.1', redis_port = 6379},
   shield_config
-):check(
-  ip, user_identifier, ngx.var.request_method, ngx.var.uri
+)
+web_shield:check(
+  ngx.var.realip_remote_addr, ngx.header['X-User-ID'],
+  ngx.var.request_method, ngx.var.uri
 )
 ```
 
@@ -91,6 +93,43 @@ require('resty.web_shield').new(
     },
     { name = 'xx_shield', config = {...} }
   }
+```
+
+## Nginx
+
+lua package path
+
+```
+http {
+  lua_package_path "/openresty_dir/lualib/?.lua;;";
+}
+```
+
+server
+
+```
+upstream backend {
+  server 192.168.1.1:8080;
+}
+
+server {
+  # ...
+
+  location / {
+    set_real_ip_from 192.168.0.1/16;
+    set_real_ip_from 10.0.0.1/8;
+    set_real_ip_from 127.0.0.1/16;
+    set_real_ip_from 172.0.0.1/8;
+
+    real_ip_recursive on;
+    real_ip_header 'X-Real-IP';
+
+    access_by_lua_file 'lualib/access_checker.lua';
+    
+    proxy_pass http://backend;
+  }
+
+}
 ```
 
 
