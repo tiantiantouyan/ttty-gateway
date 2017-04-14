@@ -1,6 +1,6 @@
 describe('store', function()
   local Helper = require 'resty.web_shield.helper'
-  local Store = require 'resty.web_shield.store'
+  local Store = require 'resty.web_shield.cache_store'
   local store = Store.new()
 
   before_each(function()

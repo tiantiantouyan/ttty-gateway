@@ -8,7 +8,7 @@ local M ={}
 M.__index = M
 
 local Helper = require 'resty.web_shield.helper'
-local Store = require 'resty.web_shield.store'
+local Store = require 'resty.web_shield.cache_store'
 local Logger = require 'resty.web_shield.logger'
 
 -- config

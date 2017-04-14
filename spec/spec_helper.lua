@@ -6,7 +6,7 @@ _G.Logger.output_level = Logger.levels.info
 _G.Logger.set_log_dev('stdout')
 
 
-local Store = require('resty.web_shield.store')
+local Store = require('resty.web_shield.cache_store')
 
 _G.clear_redis = function()
   Store.new().redis:flushdb()
