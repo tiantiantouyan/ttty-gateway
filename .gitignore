@@ -1,3 +1,6 @@
 
 *.swp
 
+/nginx/*_temp
+/nginx/logs
+

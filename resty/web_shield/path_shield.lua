@@ -36,6 +36,7 @@ end
 
 function M:filter(ip, uid, method, path)
   local store = Store.new(self.web_shield.config.redis_host, self.web_shield.config.redis_port)
+  if not store then return Helper.PASS end
 
   for index, filter in pairs(self.threshold) do
     local counter_key, counter_str = M.generate_counter_key(filter, ip, uid, method, path)

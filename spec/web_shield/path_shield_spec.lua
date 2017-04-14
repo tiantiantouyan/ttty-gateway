@@ -76,5 +76,12 @@ describe("PathShield", function()
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'PUT', '/status'), Helper.BLOCK)
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/status'), Helper.BREAK)
     end)
+
+    it('should not raise error if redis connect failed', function()
+      local shield = PathShield.new({config = {redis_host = '1.1.1.1'}}, config)
+      for i = 1, 3 do
+        assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/'), Helper.PASS)
+      end
+    end)
   end)
 end)

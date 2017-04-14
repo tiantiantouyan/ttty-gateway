@@ -4,6 +4,7 @@ M.__index = M
 local ControlShield = require 'resty.web_shield.control_shield'
 local Helper = require 'resty.web_shield.helper'
 local Logger = require 'resty.web_shield.logger'
+local CacheStore = require 'resty.web_shield.cache_store'
 
 function M.new(config, shield_config)
   return setmetatable({
@@ -26,6 +27,31 @@ function M:check(ip, uid, req_method, uri)
     return true
   end
 end
+
+function M:status()
+  local store, err = CacheStore.new(self.config.redis_host, self.config.redis_port)
+  local store_status
+
+  if store then
+    local st = ngx.now()
+    local r, err = store.redis:get('test-a-key')
+    local et = ngx.now()
+    if not r then
+      store_status = err
+    else
+      store_status = (et - st) * 1000
+    end
+  else
+    store_status = err
+  end
+
+  return {cache_store = store_status}
+end
+
+
+--
+---- Helper
+--
 
 M._cache_shield_classes = {}
 function M:new_shield(name, ...)
