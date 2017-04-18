@@ -1,7 +1,8 @@
-describe('store', function()
+describe('cache store', function()
   local Helper = require 'resty.web_shield.helper'
   local Store = require 'resty.web_shield.cache_store'
   local store = Store.new()
+  local redis = Helper.new_redis()
 
   before_each(function()
     clear_redis()
@@ -9,8 +10,8 @@ describe('store', function()
 
   describe("new", function()
     it('should use 127.0.0.1:6379 if not args', function()
-      assert.is_equal(store.host, '127.0.0.1')
-      assert.is_equal(store.port, 6379)
+      assert.is_equal(store.host, nil)
+      assert.is_equal(store.port, nil)
     end)
   end)
 
@@ -22,14 +23,15 @@ describe('store', function()
     end)
 
     it('should expire value', function()
-      local s = spy.on(Helper, 'time')
-      s.callback = function() return 100 end
+      local htime = Helper.time
+      Helper.time = function() return 100 end
       assert.is_equal(store:incr_counter('a', 1), 1)
-      local ttl = store.redis:ttl('a-100')
+      local ttl = redis:ttl('a-100')
       assert.is_equal(ttl >= 1, true)
       assert.is_equal(ttl <= 2, true)
       ngx.sleep(1)
       assert.is_equal(store:incr_counter('a', 1), 1)
+      Helper.time = htime
     end)
   end)
 end)

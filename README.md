@@ -24,51 +24,63 @@ web_shield:check(
 {
   order = 'and',
   shields = {
-    name = 'ip_shield',
-    config = {
-      whitelist = { '127.0.0.1', '192.168.0.1/16', '172.0.0.1/8' },
-      blacklist = { '123.123.123.123/16' }
+    {
+      name = 'ip_shield',
+      config = {
+        whitelist = { '127.0.0.1', '192.168.0.1/16', '172.0.0.1/8' },
+        blacklist = { '123.123.123.123/16' }
+      }
     },
-    
-    name = 'path_shield',
-    config = {
-      threshold = {
-        // level 1
-        {
-          condition = {
-            method = "*", // request methods, * GET POST, PUT DELETE
-            path = "*"
+
+    // path whitelist
+    {
+      name = 'path_shield',
+      config = {
+        threshold = {
+          {
+            matcher = {method = "GET", path = "/home"},
+            period = 1,
+            limit = 9999 // very large value ≈ whitelist
           },
-          period = 20, // seconds
-          limit = 15 // max requests
-        },
-        // level 2
-        { condition = {method = {"*"}, path = "*"}, period = 60, limit = 30 },
-        // level 3
-        { condition = {method = ["*"], path = "*"}, period = 120, limit = 45 },
+          { matcher = {method = "GET", path = "/status"}, period = 1, limit = 9999 }
+        }
+      }
+    },
 
-        // overwrite level rule
-        {
-          condition = {method = {"POST", "PUT", "DELETE"}, path = "*"}, period = 60, limit = 10
-        },
-        {
-          condition = {method = "POST", path = "/api/v1/sessions"}, period = 120, limit = 6
-        },
+    {
+      name = 'path_shield',
+      config = {
+        threshold = {
+          // level 1
+          {
+            matcher = {
+              method = "*", // request methods, * GET POST, PUT DELETE
+              path = "*"
+            },
+            period = 20, // seconds
+            limit = 15 // max requests
+          },
+          // level 2
+          { matcher = {method = {"*"}, path = "*"}, period = 60, limit = 30 },
+          // level 3
+          { matcher = {method = ["*"], path = "*"}, period = 120, limit = 45 },
 
-        // path whitelist
-        {
-          condition = {method = "GET", path = "/home"},
-          period = 1,
-          limit = 9999 // very large value ≈ whitelist
-        },
+          // overwrite level rule
+          {
+            matcher = {method = {"POST", "PUT", "DELETE"}, path = "*"}, period = 60, limit = 10
+          },
+          {
+            matcher = {method = "POST", path = "/api/v1/sessions"}, period = 120, limit = 6
+          },
 
-        // break
-        {
-          condition = {method = "GET", path = "/api/v1/data"},
-          period = 20, limit = 5,
-          break_shield = true // skip other shield
-        },
-      ]
+          // break
+          {
+            matcher = {method = "GET", path = "/api/v1/data"},
+            period = 20, limit = 5,
+            break_shield = true // skip other shield
+          },
+        ]
+      }
     }
   }
 }
@@ -93,6 +105,13 @@ web_shield:check(
     },
     { name = 'xx_shield', config = {...} }
   }
+```
+
+### Mysql config
+
+```
+local ConfigStore = require 'resty.web_shield.config_store'
+local config = ConfigStore.fetch({mysql = {database = 'web_shield'}) or default_config
 ```
 
 ## Nginx

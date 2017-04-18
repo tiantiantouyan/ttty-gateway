@@ -33,36 +33,39 @@ describe("PathShield", function()
     end)
 
     it('should block if over *(2) limit', function()
-      local s = spy.on(Helper, 'time')
+      local htime = Helper.time
 
-      s.callback = function() return 1000 end
+      Helper.time = function() return 1000 end
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/'), Helper.PASS)
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/'), Helper.PASS)
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/'), Helper.PASS)
 
-      s.callback = function() return 1005 end
+      Helper.time = function() return 1005 end
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/'), Helper.PASS)
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/'), Helper.PASS)
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/'), Helper.BLOCK)
+      Helper.time = htime
     end)
 
     it('should block if over /users/* limit', function()
-      local s = spy.on(Helper, 'time')
+      local htime = Helper.time
 
-      s.callback = function() return 1000 end
+      Helper.time = function() return 1000 end
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'PUT', '/users/1'), Helper.PASS)
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'DELETE', '/users/1'), Helper.BLOCK)
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'DELETE', '/users/2'), Helper.BLOCK)
 
-      s.callback = function() return 1015 end
+      Helper.time = function() return 1015 end
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'PUT', '/users/1'), Helper.PASS)
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'PUT', '/users/2'), Helper.BLOCK)
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/users/2'), Helper.PASS)
+
+      Helper.time = htime
     end)
 
     it('should ignore * limit if require break_shield path /status', function()
-      local s = spy.on(Helper, 'time')
-      s.callback = function() return 1000 end
+      local htime = Helper.time
+      Helper.time = function() return 1000 end
 
       for i = 1, 5 do
         assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/status'), Helper.BREAK)
@@ -75,6 +78,8 @@ describe("PathShield", function()
 
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'PUT', '/status'), Helper.BLOCK)
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/status'), Helper.BREAK)
+
+      Helper.time = htime
     end)
 
     it('should not raise error if redis connect failed', function()
