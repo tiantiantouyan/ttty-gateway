@@ -6,10 +6,56 @@ APIGateway Base OpenResty
 
 ## Usage
 
+/path/to/nginx.conf
+
 ```
+http {
+  init_by_lua_file 'lualib/init.lua';
+
+  server {
+    set_real_ip_from 192.168.0.1/16;
+    set_real_ip_from 10.0.0.1/8;
+    set_real_ip_from 127.0.0.1/16;
+    set_real_ip_from 172.0.0.1/8;
+
+    real_ip_recursive on;
+    real_ip_header 'X-Real-IP';
+
+    access_by_lua_file 'lualib/access_checker.lua';
+
+    proxy_pass http://xxx;
+  }
+}
+```
+
+Run docker
+
+```
+$ docker build -t nginx_gateway:latest ./ 
+$ docker run -v /path/to/nginx.conf:/openresty/conf/nginx.conf -e REDIS_HOST={IP} -e MYSQL_HOST={IP} MYSQL_PASSWORD={PASSWORD} nginx_gateway
+```
+
+
+### Support env variables
+
+* `REDIS_HOST`: default `127.0.0.1`
+* `REDIS_PORT`: default 6379
+* `MYSQL_HOST`: default 127.0.0.1
+* `MYSQL_PORT`: default 3306
+* `MYSQL_USER`: default web_shield
+* `MYSQL_PASS`: default empty
+* `MYSQL_DB`: default web_shield
+* `CONFIG_REFRESH_INTERVAL`: default `60` seconds, read config from mysql
+
+
+### Custom access checker
+
+```
+local ConfigStore = require 'resty.web_shield.config_store'
+
 local web_shield = require('resty.web_shield').new(
   {redis_host = '127.0.0.1', redis_port = 6379},
-  shield_config
+  ConfigStore.fetch({mysql = {database = 'web_shield'}) or shield_config
 )
 web_shield:check(
   ngx.var.realip_remote_addr, ngx.header['X-User-ID'],
@@ -84,8 +130,8 @@ web_shield:check(
     }
   }
 }
-
 ```
+
 
 ### Nested Shields
 
@@ -107,51 +153,6 @@ web_shield:check(
   }
 ```
 
-### Mysql config
-
-```
-local ConfigStore = require 'resty.web_shield.config_store'
-local config = ConfigStore.fetch({mysql = {database = 'web_shield'}) or default_config
-```
-
-## Nginx
-
-lua package path
-
-```
-http {
-  lua_package_path "/openresty_dir/lualib/?.lua;;";
-}
-```
-
-server
-
-```
-upstream backend {
-  server 192.168.1.1:8080;
-}
-
-server {
-  # ...
-
-  location / {
-    set_real_ip_from 192.168.0.1/16;
-    set_real_ip_from 10.0.0.1/8;
-    set_real_ip_from 127.0.0.1/16;
-    set_real_ip_from 172.0.0.1/8;
-
-    real_ip_recursive on;
-    real_ip_header 'X-Real-IP';
-
-    access_by_lua_file 'lualib/access_checker.lua';
-    
-    proxy_pass http://backend;
-  }
-
-}
-```
-
-
 ## Limitations
 
 * period use unify time
@@ -159,9 +160,9 @@ server {
 
 ## TODO LIST
 
-- [ ] Proxy forwarded whitelist
+- [x] Proxy forwarded whitelist
 - [x] Redis config
 - [x] IPShield support mask
-- [ ] dynamic update config
+- [x] dynamic update config
 - [ ] collect log, alert
 

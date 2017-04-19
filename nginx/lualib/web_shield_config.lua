@@ -4,18 +4,21 @@ WRITE = {'POST', 'PUT', 'DELETE'}
 
 return {
   web_shield = {
-    redis = {host = os.getenv('REDIS_HOST') or '127.0.0.1', port = 6379}
+    redis = {
+      host = os.getenv('REDIS_HOST') or '127.0.0.1',
+      port = tonumber(os.getenv('REDIS_PORT')) or 6379
+    }
   },
 
   config_store = {
     mysql = {
       host = os.getenv('MYSQL_HOST') or '127.0.0.1',
-      port = 3306,
+      port = tonumber(os.getenv('MYSQL_PORT')) or 3306,
       user = os.getenv('MYSQL_USER') or 'web_shield',
-      password = os.getenv('MYSQL_PASSWORD'),
-      database = os.getenv('MYSQL_DATABASE') or 'web_shield'
+      password = os.getenv('MYSQL_PASS'),
+      database = os.getenv('MYSQL_DB') or 'web_shield'
     },
-    refresh_interval = 3
+    refresh_interval = tonumber(os.getenv('CONFIG_REFRESH_INTERVAL')) or 60
   },
 
   shield = {
