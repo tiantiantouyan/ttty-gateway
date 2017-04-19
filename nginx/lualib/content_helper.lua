@@ -17,8 +17,6 @@ end
 
 function M.say_req_info()
   ngx.say("\n")
-  ngx.say("WebShield: '" .. ngx.ctx.web_shield_ip .. "'  '" .. ngx.ctx.web_shield_uid .. "'")
-  ngx.say("\n")
   ngx.say("RemoteIP: " .. ngx.var.remote_addr)
   ngx.say("RealRemoteIP: " .. ngx.var.realip_remote_addr)
   ngx.say("Forwarded-For: " .. (ngx.var.forwarded_for or ''))

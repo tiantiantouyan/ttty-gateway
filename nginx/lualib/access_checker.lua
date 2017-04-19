@@ -1,30 +1,39 @@
-local ch = require 'content_helper'
+local cjson = require 'cjson'
 
 local WebShield = require 'resty.web_shield'
 local ConfigStore = require 'resty.web_shield.config_store'
 
+local config = require('web_shield_config')
+
 local uri_args = ngx.req.get_uri_args(100)
-local ip = uri_args.ip or ngx.var.remote_addr
-local uid = uri_args.token or ngx.header['X-User-Token'] or '0'
+local ip = ngx.var.realip_remote_addr
 
-ngx.ctx.web_shield_ip = ip
-ngx.ctx.web_shield_uid = uid
+function jwt_user_id(jwt)
+  if not jwt then return nil end
+  local auth_iter = jwt:gmatch("[^.]+")
+  local _auth_header, auth_info, _auth_sign = auth_iter(), auth_iter(), auth_iter()
+  if not auth_info then return nil end
 
-local config_store = ConfigStore.new({
-  mysql = {
-    host = '192.168.99.1',
-    user = 'web_shield', password = 'asdfasdf',
-    database = 'ttty_config_dev',
-  },
-  refresh_interval = 5
-})
+  local ok, r = pcall(function()
+    return cjson.decode(ngx.decode_base64(auth_info)).user_id
+  end)
+
+  if ok then
+    return r
+  else
+    ngx.log(ngx.ERR, "[WebShield] fetch user identifier failed: " .. r)
+    return nil
+  end
+end
+
+local uid = jwt_user_id(ngx.header['Authorization']) or 'nil'
 
 local web_shield = WebShield.new(
-  {redis_host = os.getenv('REDIS_HOST'), redis_port = 6379},
-  config_store:fetch() or require('web_shield_config')
+  config.web_shield,
+  ConfigStore.new(config.config_store):fetch() or config.shield
 )
 
 if not web_shield:check(ip, uid, ngx.var.request_method, ngx.var.uri) then
-  ch.bad()
+  ngx.exit(ngx.HTTP_TOO_MANY_REQUESTS)
 end
 

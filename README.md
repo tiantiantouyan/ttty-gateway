@@ -1,7 +1,7 @@
 WebShield
 ===========
 
-Base OpenResty
+APIGateway Base OpenResty 
 
 
 ## Usage

@@ -53,7 +53,7 @@ function M.new_mysql(config)
 
   local db = Mysql:new()
   db:set_timeout(500)
-  Logger.debug('Mysql connect: ' .. cjson.encode(config))
+  Logger.warn('Mysql connect: ' .. cjson.encode(config))
   local ok, err = db:connect(config)
 
   if ok then
