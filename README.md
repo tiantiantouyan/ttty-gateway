@@ -40,6 +40,7 @@ $ docker run -v /path/to/nginx.conf:/openresty/conf/nginx.conf -e REDIS_HOST={IP
 
 * `REDIS_HOST`: default `127.0.0.1`
 * `REDIS_PORT`: default 6379
+* `MYSQL_CONFIG`: empty, if != nil then fetch config from mysql
 * `MYSQL_HOST`: default 127.0.0.1
 * `MYSQL_PORT`: default 3306
 * `MYSQL_USER`: default web_shield

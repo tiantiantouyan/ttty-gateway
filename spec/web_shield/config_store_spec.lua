@@ -72,10 +72,10 @@ describe('ConfigStore', function()
     end)
 
     it('should return nil if error', function()
-      local old_refresh = store.refresh_config
-      store.refresh_config = function() error('test error') end
+      local old_refresh = ConfigStore.refresh_config
+      ConfigStore.refresh_config = function() error('test error') end
 
-      assert.is_equal(store:fetch(), nil)
+      assert.is_equal(ConfigStore.new(store_config, shield_config):fetch(), nil)
       store.refresh_config = old_refresh
     end)
 

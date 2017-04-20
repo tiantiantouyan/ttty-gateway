@@ -45,14 +45,10 @@ end
 --    database
 --    ...
 function M.new(config)
-  local obj = setmetatable({
+  return setmetatable({
     mysql_config = config.mysql,
     refresh_interval = config.refresh_interval or 60
   }, M)
-
-  obj:refresh_config()
-
-  return obj
 end
 
 function M:fetch()

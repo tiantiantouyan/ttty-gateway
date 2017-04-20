@@ -28,10 +28,11 @@ end
 
 local uid = jwt_user_id(ngx.header['Authorization']) or 'nil'
 
-local web_shield = WebShield.new(
-  config.web_shield,
-  ConfigStore.new(config.config_store):fetch() or config.shield
-)
+if os.getenv('MYSQL_CONFIG') then
+  config.shield = ConfigStore.new(config.config_store):fetch() or config.shield
+end
+
+local web_shield = WebShield.new(config.web_shield, config.shield)
 
 if not web_shield:check(ip, uid, ngx.var.request_method, ngx.var.uri) then
   ngx.exit(ngx.HTTP_TOO_MANY_REQUESTS)
