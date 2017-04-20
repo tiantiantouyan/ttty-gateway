@@ -23,8 +23,8 @@ end
 M.md5 = ngx.md5
 
 function M.new_redis(host, port)
-  local host = host or '127.0.0.1'
-  local port = port or 6379
+  host = host or '127.0.0.1'
+  port = port or 6379
   local redis = Redis:new()
   redis:set_timeout(100)
   Logger.debug('Redis connect ' .. host .. ':' .. port)

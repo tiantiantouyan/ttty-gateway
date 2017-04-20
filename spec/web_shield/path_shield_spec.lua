@@ -18,7 +18,7 @@ describe("PathShield", function()
         {matcher = {method = {'PUT', "DELETE"}, path = '/users/*'}, period = 5, limit = 1}
       }
     }
-    local web_shield = WebShield.new({}, {})
+    local web_shield = WebShield.new({redis = {}}, {})
     local shield = PathShield.new(web_shield, config)
 
     it("should pass if no over limit", function()
@@ -83,7 +83,7 @@ describe("PathShield", function()
     end)
 
     it('should not raise error if redis connect failed', function()
-      local shield = PathShield.new({config = {redis_host = '1.1.1.1'}}, config)
+      local shield = PathShield.new({config = {redis = {host = '1.1.1.1'}}}, config)
       for i = 1, 3 do
         assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/'), Helper.PASS)
       end
