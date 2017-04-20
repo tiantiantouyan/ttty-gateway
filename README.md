@@ -32,7 +32,7 @@ Run docker
 
 ```
 $ docker build -t nginx_gateway:latest ./ 
-$ docker run -v /path/to/nginx.conf:/openresty/conf/nginx.conf -e REDIS_HOST={IP} -e MYSQL_HOST={IP} MYSQL_PASSWORD={PASSWORD} nginx_gateway
+$ docker run -v /path/to/nginx.conf:/openresty/conf/nginx.conf -e REDIS_HOST={IP} -e MYSQL_HOST={IP} MYSQL_PASS={PASSWORD} nginx_gateway
 ```
 
 
