@@ -6,7 +6,7 @@ local ConfigStore = require 'resty.web_shield.config_store'
 local config = require('web_shield_config')
 
 local uri_args = ngx.req.get_uri_args(100)
-local ip = ngx.var.realip_remote_addr
+local ip = ngx.var.remote_addr
 
 function jwt_user_id(jwt)
   if not jwt then return nil end
@@ -33,6 +33,9 @@ if os.getenv('MYSQL_CONFIG') then
 end
 
 local web_shield = WebShield.new(config.web_shield, config.shield)
+
+ngx.ctx.web_shield = web_shield
+ngx.ctx.web_shield_ip = ip
 
 if not web_shield:check(ip, uid, ngx.var.request_method, ngx.var.uri) then
   ngx.exit(ngx.HTTP_TOO_MANY_REQUESTS)
