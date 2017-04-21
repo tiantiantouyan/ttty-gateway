@@ -62,10 +62,6 @@ return {
             {matcher = {method = READ, path = '*'}, period = 120, limit = 45},
             {matcher = {method = WRITE, path = '*'}, period = 120, limit = 21},
 
-            -- login
-            -- {matcher = {method = {'POST'}, path = '/api/v*/sessions'}, period = 300, limit = 10},
-            -- register
-            -- {matcher = {method = {'POST'}, path = '/api/v*/users'}, period = 300, limit = 10},
           }
         }
       }

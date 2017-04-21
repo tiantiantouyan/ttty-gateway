@@ -107,6 +107,8 @@ describe('ConfigStore', function()
       assert.is_same(c[1].config.blacklist, ip2)
       assert.is_same(c[2].config.threshold, path1)
       assert.is_same(c[3].config.threshold, path2)
+
+      assert.is_equal((Helper.time() - store:last_updated_at()) <= 1, true)
     end)
 
     it('should not load db config if repeat refresh', function()

@@ -63,9 +63,14 @@ function M:fetch()
   end
 end
 
+function M:last_updated_at()
+  return M.cache:get('last_updated_at')
+end
+
 function M:refresh_config()
-  if not M.cache:get('last_updated') then
-    M.cache:set('last_updated', 1, self.refresh_interval)
+  if not M.cache:get('need_update_config') then
+    M.cache:set('need_update_config', 1, self.refresh_interval)
+    M.cache:set('last_updated_at', Helper.time())
     local shields, err = self:load_db_config()
     if shields and #shields > 0 then
       Logger.debug('Refreshed config success')

@@ -1,43 +1,28 @@
-local cjson = require 'cjson'
-
 local WebShield = require 'resty.web_shield'
 local ConfigStore = require 'resty.web_shield.config_store'
+local Helper = require('helper')
 
 local config = require('web_shield_config')
 
-local uri_args = ngx.req.get_uri_args(100)
 local ip = ngx.var.remote_addr
-
-function jwt_user_id(jwt)
-  if not jwt then return nil end
-  local auth_iter = jwt:gmatch("[^.]+")
-  local _auth_header, auth_info, _auth_sign = auth_iter(), auth_iter(), auth_iter()
-  if not auth_info then return nil end
-
-  local ok, r = pcall(function()
-    return cjson.decode(ngx.decode_base64(auth_info)).user_id
-  end)
-
-  if ok then
-    return r
-  else
-    ngx.log(ngx.ERR, "[WebShield] fetch user identifier failed: " .. r)
-    return nil
-  end
-end
-
-local uid = jwt_user_id(ngx.header['Authorization']) or 'nil'
-
-if config.config_store and config.config_store.enabled then
-  config.shield = ConfigStore.new(config.config_store):fetch() or config.shield
-end
+local jwt_table = Helper.parse_jwt(ngx.header['Authorization'])
+local uid = (jwt_table and jwt_table.user_id) or 'nil'
 
 local web_shield = WebShield.new(config.web_shield, config.shield)
 
 ngx.ctx.web_shield = web_shield
 ngx.ctx.web_shield_ip = ip
 
+if config.config_store and config.config_store.enabled then
+  local config_store = ConfigStore.new(config.config_store)
+  config.shield = config_store:fetch() or config.shield
+
+  ngx.ctx.web_shield_config_store = config_store
+  ngx.ctx.web_shield_mysql_last_read = config_store:last_updated_at()
+end
+
 if not web_shield:check(ip, uid, ngx.var.request_method, ngx.var.uri) then
+  ngx.say("Too many requests")
   ngx.exit(ngx.HTTP_TOO_MANY_REQUESTS)
 end
 

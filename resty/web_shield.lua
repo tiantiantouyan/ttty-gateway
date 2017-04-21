@@ -28,26 +28,6 @@ function M:check(ip, uid, req_method, uri)
   end
 end
 
-function M:status()
-  local store_status
-
-  local st = ngx.now()
-  local r, err = Helper.new_redis_with(
-    self.config.redis.host, self.config.redis.port, function(redis)
-      return redis:get('test-a-key')
-    end
-  )
-  local et = ngx.now()
-  if not r then
-    store_status = err
-  else
-    store_status = (et - st) * 1000
-  end
-
-  return {cache_store = store_status}
-end
-
-
 --
 ---- Helper
 --
