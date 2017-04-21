@@ -28,7 +28,7 @@ end
 
 local uid = jwt_user_id(ngx.header['Authorization']) or 'nil'
 
-if os.getenv('MYSQL_CONFIG') then
+if config.config_store and config.config_store.enabled then
   config.shield = ConfigStore.new(config.config_store):fetch() or config.shield
 end
 

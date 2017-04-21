@@ -11,6 +11,7 @@ return {
   },
 
   config_store = {
+    enabled = os.getenv('MYSQL_CONFIG'),
     mysql = {
       host = os.getenv('MYSQL_HOST') or '127.0.0.1',
       port = tonumber(os.getenv('MYSQL_PORT')) or 3306,

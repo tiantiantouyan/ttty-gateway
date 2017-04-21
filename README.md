@@ -13,14 +13,6 @@ http {
   init_by_lua_file 'lualib/init.lua';
 
   server {
-    set_real_ip_from 192.168.0.1/16;
-    set_real_ip_from 10.0.0.1/8;
-    set_real_ip_from 127.0.0.1/16;
-    set_real_ip_from 172.0.0.1/8;
-
-    real_ip_recursive on;
-    real_ip_header 'X-Real-IP';
-
     access_by_lua_file 'lualib/access_checker.lua';
 
     proxy_pass http://xxx;
@@ -62,6 +54,10 @@ web_shield:check(
   ngx.var.realip_remote_addr, ngx.header['X-User-ID'],
   ngx.var.request_method, ngx.var.uri
 )
+```
+
+```
+docker run -v {my_access_chcker}:/openresty/lualib/access_checker.lua {openresty_image}
 ```
 
 
