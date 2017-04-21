@@ -19,7 +19,7 @@ return {
       password = os.getenv('MYSQL_PASS'),
       database = os.getenv('MYSQL_DB') or 'web_shield'
     },
-    refresh_interval = tonumber(os.getenv('CONFIG_REFRESH_INTERVAL')) or 60
+    refresh_interval = tonumber(os.getenv('CONFIG_REFRESH_INTERVAL')) or 30
   },
 
   shield = {
