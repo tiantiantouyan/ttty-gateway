@@ -4,14 +4,19 @@ local Helper = require('helper')
 
 local config = require('web_shield_config')
 
+local cjson = require 'cjson'
+
+ngx.ctx.req_header = ngx.req.get_headers()
+
 local ip = ngx.var.remote_addr
-local jwt_table = Helper.parse_jwt(ngx.header['Authorization'])
+local jwt_table = Helper.parse_jwt(ngx.ctx.req_header.authorization)
 local uid = (jwt_table and jwt_table.user_id) or 'nil'
 
 local web_shield = WebShield.new(config.web_shield, config.shield)
 
 ngx.ctx.web_shield = web_shield
 ngx.ctx.web_shield_ip = ip
+ngx.ctx.web_shield_uid = uid
 
 if config.config_store and config.config_store.enabled then
   local config_store = ConfigStore.new(config.config_store)

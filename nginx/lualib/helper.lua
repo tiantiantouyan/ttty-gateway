@@ -13,8 +13,9 @@ function M.say_req_info()
   ngx.say("\n")
 
   ngx.say("WebShieldStatus: " .. cjson.encode(M.status()))
-  ngx.say("WebShieldIP: " .. ngx.ctx.web_shield_ip)
   ngx.say("WebShieldMysqlLastRead: " .. (ngx.ctx.web_shield_mysql_last_read or 'nil'))
+  ngx.say("WebShieldIP: " .. ngx.ctx.web_shield_ip)
+  ngx.say("WebShieldUID: " .. ngx.ctx.web_shield_uid)
   ngx.say("\n")
 
   ngx.say("RemoteIP: " .. ngx.var.remote_addr)
