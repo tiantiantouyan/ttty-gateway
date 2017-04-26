@@ -27,6 +27,7 @@ if config.config_store and config.config_store.enabled then
 end
 
 if not web_shield:check(ip, uid, ngx.var.request_method, ngx.var.uri) then
+  ngx.status = ngx.HTTP_TOO_MANY_REQUESTS
   ngx.say("Too many requests")
   ngx.exit(ngx.HTTP_TOO_MANY_REQUESTS)
 end
