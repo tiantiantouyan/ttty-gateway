@@ -6,6 +6,10 @@ metric_requests = prometheus:counter(
   'nginx_http_requests_total', 'Number of HTTP requests',
   {'host', 'path', 'status'}
 )
+metric_request_users = prometheus:counter(
+  'nginx_http_request_users_total', 'Number of HTTP request users',
+  {'host', 'ip', 'uid', 'status'}
+)
 metric_latency = prometheus:histogram(
   'nginx_http_request_duration_second', 'HTTP request latency', {'host'}
 )
