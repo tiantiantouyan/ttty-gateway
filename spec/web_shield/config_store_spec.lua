@@ -1,6 +1,6 @@
 describe('ConfigStore', function()
   local ConfigStore = require 'resty.web_shield.config_store'
-  local store_config = {mysql = {database = 'web_shield_test'}}
+  local store_config = {mysql = {database = 'ngx_test'}}
   local shield_config = {
     order = 'and',
     shields = {

@@ -14,6 +14,7 @@ local uid = (jwt_table and jwt_table.user_id) or 'nil'
 
 local web_shield = WebShield.new(config.web_shield, config.shield)
 
+-- debug info
 ngx.ctx.web_shield = web_shield
 ngx.ctx.web_shield_ip = ip
 ngx.ctx.web_shield_uid = uid

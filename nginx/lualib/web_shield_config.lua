@@ -16,7 +16,7 @@ return {
       host = os.getenv('MYSQL_HOST') or '127.0.0.1',
       port = tonumber(os.getenv('MYSQL_PORT')) or 3306,
       user = os.getenv('MYSQL_USER') or 'web_shield',
-      password = os.getenv('MYSQL_PASS'),
+      password = os.getenv('MYSQL_PASSWORD'),
       database = os.getenv('MYSQL_DB') or 'web_shield'
     },
     refresh_interval = tonumber(os.getenv('CONFIG_REFRESH_INTERVAL')) or 30
@@ -41,7 +41,7 @@ return {
           threshold = {
             -- {
             --   matcher = {method = ANY, path = '/'},
-            --   period = 10, limit = 10, break_shield = true
+            --   period = 10, limit = 9999, break_shield = true
             -- }
           }
         }

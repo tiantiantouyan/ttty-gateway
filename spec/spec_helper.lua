@@ -14,7 +14,7 @@ function _G.clear_redis()
 end
 
 function _G.new_mysql_with(callback)
-  return Helper.new_mysql_with({database = 'web_shield_test'}, callback)
+  return Helper.new_mysql_with({database = 'ngx_test'}, callback)
 end
 function _G.clear_mysql()
   new_mysql_with(function(conn) conn:query('DROP TABLE IF EXISTS kvs') end)
@@ -36,7 +36,10 @@ function _G.init_mysql()
   end)
 
   if not res then
-    error("Bad result: " .. err .. ": " .. errcode .. ": " .. sqlstate)
+    error(
+      "Bad result: " .. tostring(err) .. ": " ..
+        tostring(errcode) .. ": " .. tostring(sqlstate)
+    )
   end
 
   return true
