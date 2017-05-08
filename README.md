@@ -1,7 +1,7 @@
 TTTYGateway
 ===========
 
-基于 OpenResty 的 APIGateway, 限制请求频率及设置黑名单
+基于 OpenResty 的 APIGateway, 针对用户限制请求频率，设置 IP/Path 黑白名单
 
 
 ## 使用
