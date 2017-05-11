@@ -256,7 +256,7 @@ key `web_shield/path_threshold`， 格式同 `path_shield` config
 ]
 ```
 
-可以考虑简单的 example 项目 [ttty-manager](https://github.com/tiantiantouyan/ttty-manager)
+可以考虑简单的 Mysql 配置管理项目 [ttty-manager](https://github.com/tiantiantouyan/ttty-manager)
 
 
 ## 限制

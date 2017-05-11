@@ -1,9 +1,8 @@
-FROM openresty/openresty:jessie
+FROM openresty/openresty:alpine
 
 MAINTAINER Xiejiangzhi <jzxie@wind.com.cn>
 
 COPY ./nginx /openresty
-COPY ./resty /openresty/lualib/resty
 
 RUN rm -rf /openresty/*_temp
 
