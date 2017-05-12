@@ -5,6 +5,7 @@ MAINTAINER Xiejiangzhi <jzxie@wind.com.cn>
 COPY ./nginx /openresty
 
 RUN rm -rf /openresty/*_temp
+RUN rm -rf /openresty/logs/*
 
 EXPOSE 80
 
