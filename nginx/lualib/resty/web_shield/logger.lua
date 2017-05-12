@@ -36,7 +36,7 @@ function M.set_log_dev(dev)
   if M.log_dev == 'auto' and ngx and ngx.log then
     M.log = M.log_devs.ngx
   else
-    M.log = M.log_devs.stdout
+    M.log = M.log_devs[M.log_dev] or M.log_devs.stdout
   end
 end
 M.set_log_dev('auto')

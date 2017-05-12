@@ -2,5 +2,5 @@
 *.swp
 
 /nginx/*_temp
-/nginx/*.log
+/nginx/logs/*
 

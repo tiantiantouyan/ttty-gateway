@@ -4,6 +4,7 @@ local Redis = require 'resty.redis'
 local Mysql = require 'resty.mysql'
 local Logger = require 'resty.web_shield.logger'
 local cjson = require 'cjson'
+local Lrucache = require 'resty.lrucache'
 
 
 -- Filter constans
@@ -11,13 +12,41 @@ M.BLOCK = 1
 M.PASS = 2
 M.BREAK = 3
 
+M.time_offset = 0
+M.time_update_interval = 60
+M.cache = Lrucache.new(4)
+M.time_cache_key = 'last_correct_time_at'
+M.cache:set(M.time_cache_key, 0)
 
--- TODO unify time: redis:time()
--- ngx.time: fast, os.time: slow
+local time_fn
 if ngx.time then
-  M.time = ngx.time
+  time_fn = ngx.time
 else
-  M.time = os.time
+  time_fn = os.time
+end
+
+-- current_time: return accordant time of seconds
+--  function current_time() return redis:time() / 1000 end
+function M.correct_time(current_time)
+  local lt = time_fn()
+  if lt - M.cache:get(M.time_cache_key) < M.time_update_interval then return end
+  M.cache:set(M.time_cache_key, lt)
+
+  local status, ct = pcall(current_time)
+  if status then
+    if type(ct) == 'number' then
+      M.time_offset = ct - lt
+      Logger.info('time offset: ' .. M.time_offset)
+    else
+      Logger.err("correct time failed: invalid value '" .. tostring(ct) .. "'")
+    end
+  else
+    Logger.err("correct time failed: " .. ct)
+  end
+end
+
+function M.time()
+  return time_fn() + M.time_offset
 end
 
 M.md5 = ngx.md5
@@ -74,3 +103,4 @@ end
 
 
 return M
+

@@ -3,8 +3,7 @@ _G.Helper = require('resty.web_shield.helper')
 _G.Logger = require('resty.web_shield.logger')
 _G.cjson = require('cjson')
 
-Logger.output_level = Logger.levels.info
-Logger.set_log_dev('stdout')
+Logger.set_log_dev('null')
 
 
 local Store = require('resty.web_shield.cache_store')

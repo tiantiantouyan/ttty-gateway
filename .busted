@@ -4,6 +4,7 @@ return {
   },
   default = {
     verbose = true,
-    helper = 'spec/spec_helper.lua'
+    helper = 'spec/spec_helper.lua',
+    lpath = './nginx/lualib/?.lua'
   },
 }

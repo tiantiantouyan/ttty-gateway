@@ -1,6 +1,43 @@
 describe('helper', function()
   local Helper = require 'resty.web_shield.helper'
 
+  describe('correct_time', function()
+
+    after_each(function()
+      Helper.cache:set('last_correct_time_at', 0)
+      Helper.time_offset = 0
+    end)
+
+    it('should update time_offset', function()
+      local s = spy.new(function() return os.time() - 1 end)
+      assert.is_equal(Helper.time_offset, 0)
+      Helper.correct_time(s)
+      assert.is_equal(Helper.time_offset, -1)
+      assert.is_truthy((os.time() - Helper.cache:get('last_correct_time_at')) <= 1)
+      assert.spy(s).was_called()
+    end)
+
+    it('should not call if last called in the last 30 seconds', function()
+      local s = spy.new(function() return os.time() - 1 end)
+      Helper.correct_time(os.time)
+      Helper.correct_time(s)
+      assert.is_equal(Helper.time_offset, 0)
+      assert.spy(s).was_not_called()
+      Helper.cache:set('last_correct_time_at', 0)
+      Helper.correct_time(s)
+      assert.spy(s).was_called()
+    end)
+
+    it('should not raise error', function()
+      -- exception
+      Helper.correct_time(function() asdf() end)
+
+      Helper.cache:set('last_correct_time_at', 0)
+      -- invalid value
+      Helper.correct_time(function() return 'asdf' end)
+    end)
+  end)
+
   describe('time', function()
     it('should return current timestamp', function()
       assert.is_equal(Helper.time(), ngx.time())
