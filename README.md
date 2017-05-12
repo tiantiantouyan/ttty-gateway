@@ -1,7 +1,7 @@
 TTTYGateway
 ===========
 
-基于 OpenResty 的 APIGateway, 限制请求频率及设置黑名单
+基于 OpenResty 的 APIGateway, 针对用户限制请求频率，设置 IP/Path 黑白名单
 
 
 ## 使用
@@ -256,7 +256,7 @@ key `web_shield/path_threshold`， 格式同 `path_shield` config
 ]
 ```
 
-可以考虑简单的 example 项目 [ttty-manager](https://github.com/tiantiantouyan/ttty-manager)
+可以考虑简单的 Mysql 配置管理项目 [ttty-manager](https://github.com/tiantiantouyan/ttty-manager)
 
 
 ## 限制
