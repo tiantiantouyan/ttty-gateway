@@ -26,7 +26,7 @@ else
 end
 
 -- current_time: return accordant time of seconds
---  function current_time() return redis:time() / 1000 end
+--  function current_time() return tonumber(redis:time()[1]) end
 function M.correct_time(current_time)
   local lt = time_fn()
   if lt - M.cache:get(M.time_cache_key) < M.time_update_interval then return end
@@ -51,6 +51,7 @@ end
 
 M.md5 = ngx.md5
 
+-- https://github.com/openresty/lua-resty-redis
 function M.new_redis(host, port)
   host = host or '127.0.0.1'
   port = port or 6379
@@ -67,14 +68,18 @@ function M.new_redis(host, port)
   end
 end
 
+-- https://github.com/openresty/lua-resty-redis#set_keepalive
 function M.new_redis_with(host, port, callback)
   local conn, err = M.new_redis(host, port)
   if not conn then return nil, err end
   local r = {callback(conn)}
+  -- put it into the connection pool of size 100
+  -- with 10 seconds max idle timeout
   conn:set_keepalive(10 * 1000, 100)
   return unpack(r)
 end
 
+-- https://github.com/openresty/lua-resty-mysql
 function M.new_mysql(config)
   config.host = config.host or '127.0.0.1'
   config.port = config.port or 3306
@@ -93,10 +98,13 @@ function M.new_mysql(config)
   end
 end
 
+-- https://github.com/openresty/lua-resty-redis
 function M.new_mysql_with(config, callback)
   local conn, err = M.new_mysql(config)
   if not conn then return nil, err end
   local r = {callback(conn)}
+  -- put it into the connection pool of size 50
+  -- with 10 seconds max idle timeout
   conn:set_keepalive(10 * 1000, 50)
   return unpack(r)
 end
