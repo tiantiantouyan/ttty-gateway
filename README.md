@@ -275,7 +275,7 @@ key `web_shield/path_threshold`， 格式同 `path_shield` config
 ## TODO
 
 * 目前流量是由 redis 来统计的，考虑是否可以结合 resty-limit-traffic 使用本地内存来实现一个更高效率的方案
-* 支持自定 Redis, MYSQL pool size，并发量大时，pool 过小可能会 timeout，主要是 Redis，每个请求都会去连接
+* path_shield 支持 header 匹配，比如限制指定 ua 请求量为 3req/5s，或是非指定 ua 请求量为 5req/10s
 
 
 ## Development
