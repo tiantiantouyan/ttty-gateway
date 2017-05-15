@@ -259,9 +259,10 @@ key `web_shield/path_threshold`， 格式同 `path_shield` config
 可以考虑简单的 Mysql 配置管理项目 [ttty-manager](https://github.com/tiantiantouyan/ttty-manager)
 
 
-## 限制
+## TODO
 
-* period 使用的是本地时间，虽然速度快，但是如果此服务部署在多台机器上的时间不一样的话，限制效果会出问题，可以考虑定时时先从服务器(redis 或是其它服务)取得一个标准的时间
+* 目前流量是由 redis 来统计的，考虑是否可以结合 resty-limit-traffic 使用本地内存来实现一个更高效率的方案
+* 支持自定 Redis, MYSQL pool size，并发量大时，pool 过小可能会 timeout，主要是 Redis，每个请求都会去连接
 
 
 ## Development

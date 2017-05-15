@@ -3,4 +3,5 @@
 
 /nginx/*_temp
 /nginx/logs/*
+!/nginx/logs/.keep
 

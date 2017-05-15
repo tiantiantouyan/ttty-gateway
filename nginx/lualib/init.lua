@@ -1,6 +1,4 @@
 local config = require 'web_shield_config'
-local Helper = require 'resty.web_shield.helper'
-
 
 -- lua_shared_dict prometheus_metrics 10M;
 prometheus = require('prometheus').init('prometheus_metrics')
