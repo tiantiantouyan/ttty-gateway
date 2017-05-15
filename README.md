@@ -86,12 +86,16 @@ http {
 
 * `REDIS_HOST`: default `127.0.0.1`
 * `REDIS_PORT`: default 6379
+* `REDIS_POOL_SIZE`: default 100
+* `REDIS_POOL_TIMEOUT`: default 10 * 1000, 毫秒
 * `MYSQL_CONFIG`: empty, 如果不为空的话， MYSQL 中又有相关的配置，直接读取 MYSQL 配置
 * `MYSQL_HOST`: default 127.0.0.1
 * `MYSQL_PORT`: default 3306
 * `MYSQL_USER`: default web_shield
 * `MYSQL_PASSWORD`: default empty
 * `MYSQL_DB`: default web_shield
+* `MYSQL_POOL_SIZE`: default 100
+* `MYSQL_POOL_TIMEOUT`: default 10 * 1000, 毫秒
 * `CONFIG_REFRESH_INTERVAL`: default `30` seconds, refresh MYSQL config
 
 

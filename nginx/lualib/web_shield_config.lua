@@ -6,7 +6,9 @@ return {
   web_shield = {
     redis = {
       host = os.getenv('REDIS_HOST') or '127.0.0.1',
-      port = tonumber(os.getenv('REDIS_PORT')) or 6379
+      port = tonumber(os.getenv('REDIS_PORT')) or 6379,
+      pool_size = tonumber(os.getenv('REDIS_POOL_SIZE')) or 100,
+      pool_timeout = tonumber(os.getenv('REDIS_POOL_TIMEOUT')) or (10 * 1000)
     }
   },
 
@@ -17,7 +19,9 @@ return {
       port = tonumber(os.getenv('MYSQL_PORT')) or 3306,
       user = os.getenv('MYSQL_USER') or 'web_shield',
       password = os.getenv('MYSQL_PASSWORD'),
-      database = os.getenv('MYSQL_DB') or 'web_shield'
+      database = os.getenv('MYSQL_DB') or 'web_shield',
+      pool_size = tonumber(os.getenv('MYSQL_POOL_SIZE')) or 10,
+      pool_timeout = tonumber(os.getenv('MYSQL_POOL_TIMEOUT')) or (10 * 1000)
     },
     refresh_interval = tonumber(os.getenv('CONFIG_REFRESH_INTERVAL')) or 30
   },

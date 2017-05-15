@@ -6,10 +6,19 @@ local Helper = require 'resty.web_shield.helper'
 local Logger = require 'resty.web_shield.logger'
 local CacheStore = require 'resty.web_shield.cache_store'
 
+-- config:
+--  redis:
+--    host:
+--    port:
+--    pool_size:
+-- shield_config:
+--  order: 'and' or 'or'
+--  shields: Array of shield
 function M.new(config, shield_config)
   return setmetatable({
     config = config,
-    shield_config = shield_config
+    shield_config = shield_config,
+    cache_store = CacheStore.new(config.redis)
   }, M)
 end
 

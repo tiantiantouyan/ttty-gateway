@@ -8,7 +8,6 @@ local M ={}
 M.__index = M
 
 local Helper = require 'resty.web_shield.helper'
-local Store = require 'resty.web_shield.cache_store'
 local Logger = require 'resty.web_shield.logger'
 
 -- config
@@ -30,13 +29,12 @@ local Logger = require 'resty.web_shield.logger'
 function M.new(web_shield, config)
   return setmetatable({
     web_shield = web_shield,
-    redis_config = web_shield.config.redis,
     threshold = config.threshold
   }, M)
 end
 
 function M:filter(ip, uid, method, path)
-  local store = Store.new(self.redis_config.host, self.redis_config.port)
+  local store = self.web_shield.cache_store
   if not store then return Helper.PASS end
 
   for index, filter in pairs(self.threshold) do

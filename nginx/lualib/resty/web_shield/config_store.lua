@@ -43,10 +43,21 @@ end
 --    user
 --    password
 --    database
+--    pool_size
 --    ...
 function M.new(config)
+  local mysql_config = {}
+  local conn_config = {}
+
+  for k, v in pairs(config.mysql) do mysql_config[k] = v end
+  for i, k in ipairs({'pool_size', 'pool_timeout'}) do
+    conn_config[k] = mysql_config[k]
+    mysql_config[k] = nil
+  end
+
   return setmetatable({
-    mysql_config = config.mysql,
+    mysql_config = mysql_config,
+    conn_config = conn_config,
     refresh_interval = config.refresh_interval or 60
   }, M)
 end
@@ -87,12 +98,13 @@ function M:refresh_config()
 end
 
 function M:load_db_config()
-  local res, err = assert(Helper.new_mysql_with(self.mysql_config, function(conn)
+  local query_fn = function(conn)
     return conn:query(
       'SELECT `key`, `val` FROM `kvs` WHERE `key` in (' ..
         table.concat(CONFIG_KEYS, ',') .. ')'
     )
-  end))
+  end
+  local res, err = assert(Helper.new_mysql_with(self.mysql_config, self.conn_config, query_fn))
 
   if not res then
     return nil, err

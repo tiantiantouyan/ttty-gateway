@@ -52,9 +52,9 @@ end
 M.md5 = ngx.md5
 
 -- https://github.com/openresty/lua-resty-redis
-function M.new_redis(host, port)
-  host = host or '127.0.0.1'
-  port = port or 6379
+function M.new_redis(config)
+  host = config and config.host or '127.0.0.1'
+  port = config and config.port or 6379
   local redis = Redis:new()
   redis:set_timeout(100)
   Logger.debug('Redis connect ' .. host .. ':' .. port)
@@ -69,13 +69,16 @@ function M.new_redis(host, port)
 end
 
 -- https://github.com/openresty/lua-resty-redis#set_keepalive
-function M.new_redis_with(host, port, callback)
-  local conn, err = M.new_redis(host, port)
+function M.new_redis_with(redis_config, conn_config, callback)
+  local conn, err = M.new_redis(redis_config)
   if not conn then return nil, err end
   local r = {callback(conn)}
   -- put it into the connection pool of size 100
   -- with 10 seconds max idle timeout
-  conn:set_keepalive(10 * 1000, 100)
+  conn:set_keepalive(
+    conn_config and conn_config.pool_timeout or 10 * 1000,
+    conn_config and conn_config.pool_size or 100
+  )
   return unpack(r)
 end
 
@@ -99,13 +102,16 @@ function M.new_mysql(config)
 end
 
 -- https://github.com/openresty/lua-resty-redis
-function M.new_mysql_with(config, callback)
+function M.new_mysql_with(config, conn_config, callback)
   local conn, err = M.new_mysql(config)
   if not conn then return nil, err end
   local r = {callback(conn)}
   -- put it into the connection pool of size 50
   -- with 10 seconds max idle timeout
-  conn:set_keepalive(10 * 1000, 50)
+  conn:set_keepalive(
+    conn_config and conn_config.pool_timeout or 10 * 1000,
+    conn_config and conn_config.pool_size or 50
+  )
   return unpack(r)
 end
 

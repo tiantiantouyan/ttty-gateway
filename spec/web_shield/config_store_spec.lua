@@ -1,42 +1,9 @@
 describe('ConfigStore', function()
   local ConfigStore = require 'resty.web_shield.config_store'
-  local store_config = {mysql = {database = 'ngx_test'}}
-  local shield_config = {
-    order = 'and',
-    shields = {
-      {
-        name = 'ip_shield',
-        config = {
-          whitelist = { '127.0.0.1' },
-          blacklist = { '123.123.123.123/16' }
-        }
-      },
-
-      {
-        name = 'path_shield',
-        config = {
-          threshold = {
-            {
-              matcher = { method = "GET", path = "/status" },
-              period = 10, limit = 100, break_shield = true
-            }
-          }
-        }
-      },
-
-      {
-        name = 'path_shield',
-        config = {
-          threshold = {
-            { matcher = {method = {"*"}, path = "*"}, period = 60, limit = 30 }
-          }
-        }
-      }
-    }
-  }
+  local store_config = {mysql = {database = 'ngx_test', pool_size = 312, pool_timeout = 110}}
 
   _G.init_mysql()
-  local store = ConfigStore.new(store_config, shield_config)
+  local store = ConfigStore.new(store_config)
 
   local ip1 = {'1.1.1.1'}
   local ip2 = {'1.1.1.2'}
@@ -75,7 +42,7 @@ describe('ConfigStore', function()
       local old_refresh = ConfigStore.refresh_config
       ConfigStore.refresh_config = function() error('test error') end
 
-      assert.is_equal(ConfigStore.new(store_config, shield_config):fetch(), nil)
+      assert.is_equal(ConfigStore.new(store_config):fetch(), nil)
       store.refresh_config = old_refresh
     end)
 
@@ -109,6 +76,7 @@ describe('ConfigStore', function()
       assert.is_same(c[3].config.threshold, path2)
 
       assert.is_equal((Helper.time() - store:last_updated_at()) <= 1, true)
+      s:revert()
     end)
 
     it('should not load db config if repeat refresh', function()
@@ -119,6 +87,7 @@ describe('ConfigStore', function()
       store:refresh_config()
       store:refresh_config()
       assert.spy(s).was_not_called()
+      s:revert()
     end)
 
     it('should load db config if cache expired', function()
@@ -128,6 +97,7 @@ describe('ConfigStore', function()
       ngx.sleep(0.3)
       store:refresh_config()
       assert.spy(s).was_called()
+      s:revert()
     end)
   end)
 
@@ -154,6 +124,19 @@ describe('ConfigStore', function()
     it('should return nil if invalid filter config', function()
       write_mysql_kv('path_whitelist', "invlaid data")
       assert.is_equal(store:load_db_config(), nil)
+    end)
+
+    it('should connect db with conn_config', function()
+      local s = spy.on(Helper, 'new_mysql_with')
+      clear_mysql()
+      init_mysql()
+      assert.is_equal(store:load_db_config(), nil)
+      assert.spy(s).was_called_with(
+        store.mysql_config,
+        {pool_size = 312, pool_timeout = 110},
+        match.is_function()
+      )
+      s:revert()
     end)
   end)
 end)

@@ -13,7 +13,7 @@ function _G.clear_redis()
 end
 
 function _G.new_mysql_with(callback)
-  return Helper.new_mysql_with({database = 'ngx_test'}, callback)
+  return Helper.new_mysql_with({database = 'ngx_test'}, nil, callback)
 end
 function _G.clear_mysql()
   new_mysql_with(function(conn) conn:query('DROP TABLE IF EXISTS kvs') end)

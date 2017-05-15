@@ -10,8 +10,14 @@ describe('cache store', function()
 
   describe("new", function()
     it('should use 127.0.0.1:6379 if not args', function()
-      assert.is_equal(store.host, nil)
-      assert.is_equal(store.port, nil)
+      assert.is_equal(store.redis_config.host, nil)
+      assert.is_equal(store.redis_config.port, nil)
+    end)
+
+    it('should save conn_config', function()
+      config = {host = '1.2.3.4', pool_size = 2, pool_timeout = 100}
+      s = Store.new(config)
+      assert.is_same(s.conn_config, {pool_size = 2, pool_timeout = 100})
     end)
   end)
 

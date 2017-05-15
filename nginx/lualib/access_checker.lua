@@ -41,3 +41,5 @@ if not web_shield:check(ip, uid, ngx.var.request_method, ngx.var.uri) then
   ngx.exit(ngx.HTTP_TOO_MANY_REQUESTS)
 end
 
+
+
