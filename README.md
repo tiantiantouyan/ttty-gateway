@@ -3,21 +3,19 @@ TTTYGateway
 
 基于 OpenResty 的 APIGateway, 针对用户限制请求频率，设置 IP/Path 黑白名单
 
+## 可以做什么
+
+* 设置 API 请求的 IP 黑名单及白名单
+* 针对 Path 设置请求的白名单
+* 根据 IP 针对 Path 设置请求频率限制
+* 根据 User 针对 Path 设置请求频率限制
+* 为 Prometheus 提供简单的 Nginx 状态信息
+
+Path: 可以对指定请求方法(GET POST PUT DELETE)及请求的路径进行匹配，路径支持简单的通配符
+User: 代码中自由定义，可以未登陆时使用 IP，登陆后使用用户 ID 或 TOKEN 等 
+
 
 ## 使用
-
-### Run
-
-```
-$ openresty -p /path/to/ttty-gateway
-```
-
-### Docker
-
-```
-$ docker build ./ -t ttty_gateway:latest
-$ docker run -v /path/to/your/nginx.conf:/openresty/conf/nginx.conf -e REDIS_HOST={IP} -e MYSQL_HOST={IP} MYSQL_PASSWORD={PASSWORD} nginx_gateway
-```
 
 ## Nginx config
 
@@ -57,7 +55,6 @@ http {
 ```
 http {
   lua_package_path "/path/to/ttty-gateway/nginx/lualib/?.lua;;";
-
   init_by_lua_file 'lualib/init.lua'; # load gateway config
 
   server {
@@ -79,6 +76,18 @@ http {
 }
 ```
 
+### Run
+
+```
+$ openresty -p /path/to/ttty-gateway
+```
+
+### Docker
+
+```
+$ docker build ./ -t ttty_gateway:latest
+$ docker run -v /path/to/your/nginx.conf:/openresty/conf/nginx.conf -e REDIS_HOST={IP} -e MYSQL_HOST={IP} MYSQL_PASSWORD={PASSWORD} nginx_gateway
+```
 
 ## 默认配置支持的 ENV
 
@@ -99,10 +108,10 @@ http {
 * `CONFIG_REFRESH_INTERVAL`: default `30` seconds, refresh MYSQL config
 
 
-## 定制检查器参数
+## 定制 IP 及 用户标识
 
 默认的为 `nginx/lualib/access_checker.lua`
-默认的应该不会适合你，使用你自己的方式取得  user-ip, user-id， 及使用你自己的方式加载配置
+默认的应该不会适合你，使用你自己的方式取得  user-ip, user-id， 也可以使用自己的方式加载配置
 
 ```
 -- 加载默认的配置 nginx/lualib/web_shield_config, 支持上面提到的 ENV 
@@ -122,7 +131,7 @@ end
 ```
 
 
-## Shield Config
+## 规则配置(Shield Config)
 
 参照 `nginx/lualib/web_shield_config.lua` 中的 shield 数据
 
