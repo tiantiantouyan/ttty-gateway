@@ -8,7 +8,7 @@ TTTYGateway
 * 设置 API 请求的 IP 黑名单及白名单
 * 针对 Path 设置请求的白名单
 * 根据 IP 针对 Path 设置请求频率限制
-* 根据 User 针对 Path 设置请求频率限制
+* 根据 User 针对 Path、HEADER 设置请求频率限制
 * 为 Prometheus 提供简单的 Nginx 状态信息
 
 Path: 可以对指定请求方法(GET POST PUT DELETE)及请求的路径进行匹配，路径支持简单的通配符
