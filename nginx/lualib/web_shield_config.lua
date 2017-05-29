@@ -40,7 +40,7 @@ return {
 
       -- path whitelist
       {
-        name = 'path_shield',
+        name = 'threshold_shield',
         config = {
           threshold = {
             -- {
@@ -53,7 +53,7 @@ return {
 
       -- global threshold
       {
-        name = 'path_shield',
+        name = 'threshold_shield',
         config = {
           threshold = {
             -- level 1

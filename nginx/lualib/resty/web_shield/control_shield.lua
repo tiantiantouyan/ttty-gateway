@@ -33,10 +33,10 @@ function M.new(web_shield, config)
   }, M)
 end
 
-function M:filter(ip, uid, method, path)
+function M:filter(...)
   for index, desc in ipairs(self.config.shields) do
     local shield = self.web_shield:new_shield(desc.name, desc.config)
-    local result = shield:filter(ip, uid, method, path)
+    local result = shield:filter(...)
 
     if result == Helper.BREAK then return result end
     if result == Helper.BLOCK and self.config.order == 'and' then return result end

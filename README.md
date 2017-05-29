@@ -141,7 +141,7 @@ end
 
 * `control_shield`: 最外层默认是一个 control_shield，使用 `order` 来控制 `shields` 的运行逻辑
 * `ip_shield`: 关于 IP 的黑白名单
-* `path_shield`: 基于用户及请求路径的请求限制
+* `threshold_shield`: 基于用户及请求路径的请求限制
 
 ### Example
 
@@ -159,7 +159,7 @@ end
 
     -- path whitelist
     {
-      name = 'path_shield',
+      name = 'threshold_shield',
       config = {
         threshold = {
           {
@@ -174,13 +174,17 @@ end
           {
             matcher = {method = {"GET"}, path = "/status"},
             period = 1, limit = 9999, break_shield = true 
+          },
+          {
+            matcher = {method = {"GET"}, path = "*", header = {user_agent = "^MyUA$"}},
+            period = 1, limit = 9999, break_shield = true 
           }
         }
       }
     },
 
     {
-      name = 'path_shield',
+      name = 'threshold_shield',
       config = {
         threshold = {
           -- level 1
@@ -202,7 +206,12 @@ end
             period = 60, limit = 10
           },
           {
-            matcher = {method = {"POST"}, path = "/api/v1/sessions"}, period = 120, limit = 6
+            matcher = {
+              method = {"POST"},
+              path = "/api/v1/sessions",
+              header = {user_agent = 'lua pattern', x_id = '$id-.*$'} -- header match
+            },
+            period = 120, limit = 6
           },
         ]
       }
@@ -249,7 +258,7 @@ key `web_shield/ip_blacklist`
 ["1.2.3.4', "123.123.123.123/24"]
 ```
 
-key `web_shield/path_whitelist`, 格式同 `path_shield` config
+key `web_shield/path_whitelist`, 格式同 `threshold_shield` config
 
 ```
 [
@@ -260,7 +269,7 @@ key `web_shield/path_whitelist`, 格式同 `path_shield` config
 ]
 ```
 
-key `web_shield/path_threshold`， 格式同 `path_shield` config
+key `web_shield/path_threshold`， 格式同 `threshold_shield` config
 
 ```
 [
@@ -275,7 +284,6 @@ key `web_shield/path_threshold`， 格式同 `path_shield` config
 ## TODO
 
 * 目前流量是由 redis 来统计的，考虑是否可以结合 resty-limit-traffic 使用本地内存来实现一个更高效率的方案
-* path_shield 支持 header 匹配，比如限制指定 ua 请求量为 3req/5s，或是非指定 ua 请求量为 5req/10s
 
 
 ## Development

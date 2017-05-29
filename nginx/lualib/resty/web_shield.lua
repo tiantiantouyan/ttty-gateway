@@ -22,13 +22,13 @@ function M.new(config, shield_config)
   }, M)
 end
 
-function M:check(ip, uid, req_method, uri)
+function M:check(ip, uid, req_method, uri, header)
   local str = table.concat({ip, uid, req_method, uri}, ' ')
   Logger.debug("Check " .. str)
 
   local shield = self:new_shield('control_shield', self.shield_config)
 
-  if shield:filter(ip, uid, req_method, uri) == Helper.BLOCK then
+  if shield:filter(ip, uid, req_method, uri, header) == Helper.BLOCK then
     Logger.err("BLOCK " .. str)
     return false
   else
@@ -43,6 +43,7 @@ end
 
 M._cache_shield_classes = {}
 function M:new_shield(name, ...)
+  if name == 'path_shield' then name = 'threshold_shield' end
   local shield_cls = M._cache_shield_classes[name]
   if not shield_cls then
     shield_cls = require('resty.web_shield.' .. name)

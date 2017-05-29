@@ -116,5 +116,19 @@ function M.new_mysql_with(config, conn_config, callback)
 end
 
 
+-- use Lua patterns https://www.lua.org/pil/20.2.html
+--
+-- opts:
+--  perfect_match: true or false, default false
+function M.match(str, matcher, opts)
+  opts = opts or {}
+  if opts.perfect_match then
+    matcher = "^" .. matcher .. "$"
+  end
+
+  return string.find(str, matcher) ~= nil
+end
+
+
 return M
 
