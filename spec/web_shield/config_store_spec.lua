@@ -55,8 +55,8 @@ describe('ConfigStore', function()
         order = 'and',
         shields = {
           {name = 'ip_shield', config = {whitelist = ip1, blacklist = ip2}},
-          {name = 'path_shield', config = {threshold = path1}},
-          {name = 'path_shield', config = {threshold = path2}},
+          {name = 'threshold_shield', config = {threshold = path1}},
+          {name = 'threshold_shield', config = {threshold = path2}},
         }
       })
       store.refresh_config = old_refresh

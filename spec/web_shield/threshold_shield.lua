@@ -1,5 +1,5 @@
-describe("PathShield", function()
-  local PathShield = require 'resty.web_shield.path_shield'
+describe("ThresholdShield", function()
+  local ThresholdShield = require 'resty.web_shield.threshold_shield'
 
   before_each(function()
     clear_redis()
@@ -15,11 +15,15 @@ describe("PathShield", function()
 
         {matcher = {method = {'*'}, path = '*'}, period = 5, limit = 3},
         {matcher = {method = {'*'}, path = '*'}, period = 12, limit = 5},
-        {matcher = {method = {'PUT', "DELETE"}, path = '/users/*'}, period = 5, limit = 1}
+        {matcher = {method = {'PUT', "DELETE"}, path = '/users/*'}, period = 5, limit = 1},
+        {
+          matcher = {method = {'*'}, path = '*', header = {ua = 'hack'}},
+          period = 5, limit = 1
+        }
       }
     }
     local web_shield = WebShield.new({redis = {}}, {})
-    local shield = PathShield.new(web_shield, config)
+    local shield = ThresholdShield.new(web_shield, config)
 
     it("should pass if no over limit", function()
       assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/'), Helper.PASS)
@@ -83,10 +87,33 @@ describe("PathShield", function()
     end)
 
     it('should not raise error if redis connect failed', function()
-      local shield = PathShield.new({config = {redis = {host = '1.1.1.1'}}}, config)
+      local shield = ThresholdShield.new({config = {redis = {host = '1.1.1.1'}}}, config)
       for i = 1, 3 do
         assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/'), Helper.PASS)
       end
+    end)
+
+    it('should PASS if header not matched', function()
+      config.threshold[2].matcher.header = {ua = '^ua$'}
+      for i = 1, 4 do
+        assert.is_equal(
+          shield:filter('1.1.1.1', 'uid', 'GET', '/', {ua = 'ua2'}), Helper.PASS
+        )
+      end
+      config.threshold[2].matcher.header = nil
+    end)
+
+    it('should exec filter if header match', function()
+      assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/', {ua = 'hack'}), Helper.PASS)
+      assert.is_equal(
+        shield:filter('1.1.1.1', 'uid', 'GET', '/', {ua = 'hack'}), Helper.BLOCK
+      )
+    end)
+
+    it('should not raise error if header is invalid', function()
+      config.threshold[1].matcher.header = 'asdf'
+      assert.is_equal(shield:filter('1.1.1.1', 'uid', 'GET', '/', 'asdf'), Helper.PASS)
+      config.threshold[1].matcher.header = nil
     end)
   end)
 end)

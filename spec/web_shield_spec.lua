@@ -30,11 +30,28 @@ describe("WebShield", function()
       s1.callback = function() return control_shield end
 
       web_shield:check('1.2.3.4', 'uid', 'GET', '/mypath')
+      web_shield:check('1.2.3.4', 'uid', 'GET', '/mypath', {user_agent = 'a'})
       assert.spy(s1).was_called_with(web_shield, config)
-      assert.spy(s2).was_called_with(control_shield, '1.2.3.4', 'uid', 'GET', '/mypath')
+      assert.spy(s1).was_called_with(web_shield, config)
+      assert.spy(s2).was_called_with(control_shield, '1.2.3.4', 'uid', 'GET', '/mypath', nil)
+      assert.spy(s2).was_called_with(
+        control_shield, '1.2.3.4', 'uid', 'GET', '/mypath', {user_agent = 'a'}
+      )
       s1:revert()
       s2:revert()
       ControlShield.new = cs_new
+    end)
+  end)
+
+  describe('new_shield', function()
+    local web_shield = WebShield.new({}, config)
+
+    it('should not raise error shield', function()
+      local shields = {'control_shield', 'ip_shield', 'threshold_shield', 'path_shield'}
+
+      for i, name in ipairs(shields) do
+        web_shield:new_shield(name, {})
+      end
     end)
   end)
 end)

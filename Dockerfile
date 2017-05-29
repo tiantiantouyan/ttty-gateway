@@ -1,6 +1,6 @@
 FROM openresty/openresty:alpine
 
-MAINTAINER Xiejiangzhi <jzxie@wind.com.cn>
+MAINTAINER Jiangzhi Xie <xiejiangzhi@gmail.com>
 
 COPY ./nginx /openresty
 

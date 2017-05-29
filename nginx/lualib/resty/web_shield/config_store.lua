@@ -114,8 +114,8 @@ function M:load_db_config()
 
   local shields = {
     {name = 'ip_shield', config = {}},
-    {name = 'path_shield', config = {}},
-    {name = 'path_shield', config = {}}
+    {name = 'threshold_shield', config = {}},
+    {name = 'threshold_shield', config = {}}
   }
 
   for index, row in ipairs(res) do
