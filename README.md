@@ -284,6 +284,7 @@ key `web_shield/path_threshold`， 格式同 `threshold_shield` config
 ## TODO
 
 * 目前流量是由 redis 来统计的，考虑是否可以结合 resty-limit-traffic 使用本地内存来实现一个更高效率的方案
+* 支持以 Kong 插件方式运行
 
 
 ## Development
